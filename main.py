@@ -10,10 +10,10 @@ from astrbot.core.star.filter.platform_adapter_type import PlatformAdapterType
 class JoinLog(Star):
     def __init__(self, context: Context, config: AstrBotConfig):
         super().__init__(context, config)
-        self.log: bool = bool(config.get("log", True))
+        self.log_enabled: bool = bool(config.get("log", True))
 
     async def log(self, string: str):
-        if self.log:
+        if self.log_enabled:
             logger.info(string)
 
     @filter.platform_adapter_type(PlatformAdapterType.AIOCQHTTP)
