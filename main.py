@@ -86,9 +86,15 @@ class GroupLog(Star):
                 operator_id = raw.get("operator_id")
                 duration = raw.get("duration")
                 if sub_type == "ban":
-                    await self.log(f"用户 {user_id} 被管理员 {operator_id} 禁言 {duration} 秒")
+                    if user_id == "0":
+                        await self.log(f"管理员 {operator_id} 开启全体禁言")
+                    else:
+                        await self.log(f"用户 {user_id} 被管理员 {operator_id} 禁言 {duration} 秒")
                 elif sub_type == "lift_ban":
-                    await self.log(f"用户 {user_id} 的禁言被管理员 {operator_id} 解除")
+                    if user_id == "0":
+                        await self.log(f"管理员 {operator_id} 解除全体禁言")
+                    else:
+                        await self.log(f"用户 {user_id} 的禁言被管理员 {operator_id} 解除")
 
             elif notice_type == "notify":
                 sub_type = raw.get("sub_type")
@@ -105,8 +111,7 @@ class GroupLog(Star):
             elif notice_type == "group_recall":
                 operator_id = raw.get("operator_id")
                 message_id = raw.get("message_id")
-                await self.log(f"测试: operator_id类型={type(operator_id)}, user_id类型={type(user_id)}")
-                if operator_id == user_id:
+                if str(operator_id) == str(user_id):
                     await self.log(f"用户 {user_id} 撤回 {message_id} 消息")
                 else:
                     await self.log(f"用户 {user_id} 的消息 {message_id} 被 {operator_id} 撤回")
@@ -126,5 +131,7 @@ class GroupLog(Star):
                     await self.log(f"管理员 {operator_id} 将 {sender_id} 的消息 {message_id} 移除精华")
             else:
                 await self.log(f"未处理的 notice_type: {notice_type}")
+        elif post_type == "message":
+            pass
         else:
             await self.log(f"未处理的 post_type: {post_type}")
