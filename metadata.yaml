@@ -1,7 +1,7 @@
 name: astrbot_plugin_grouplog
 display_name: 加群日志
-desc: 记录群聊操作日志(AIOCQHTTP)
-version: v0.0.1
+desc: 记录群聊操作日志
+version: v0.0.5
 author: 东经雨
 support_platforms: 
   - aiocqhttp
