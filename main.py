@@ -1,11 +1,3 @@
-import os
-import json
-import time
-import sqlite3
-import asyncio
-from datetime import datetime, timedelta
-from typing import Optional, List, Dict, Any
-from pathlib import Path
 from contextlib import asynccontextmanager
 
 from astrbot.api.event import filter, AstrMessageEvent, MessageEventResult
@@ -34,7 +26,8 @@ class GroupLog(Star):
     async def handle_group(self, event: AiocqhttpMessageEvent):
         """处理群事件"""
         raw = getattr(event.message_obj, "raw_message", None)
-        if not isinstance(raw, dict): return
+        if not isinstance(raw, dict):
+            return
 
         post_type = raw.get("post_type")
         user_id = str(raw.get("user_id"))
