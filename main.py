@@ -6,7 +6,7 @@ from astrbot.core.platform.sources.aiocqhttp.aiocqhttp_message_event import (
 )
 from astrbot.core.star.filter.platform_adapter_type import PlatformAdapterType
 
-
+@register("astrbot_plugin_grouplog", "东经雨", "记录群聊操作日志", "0.0.6")
 class GroupLog(Star):
     def __init__(self, context: Context, config: AstrBotConfig):
         super().__init__(context, config)
@@ -14,10 +14,10 @@ class GroupLog(Star):
         self.log_event: list = list(config.get("event_types", []))
 
 
-    async def log(self, type: str, string: str):
+    async def log(self, event_type: str, string: str):
         """日志"""
         if self.log_enabled:
-            if type in self.log_event:
+            if event_type in self.log_event:
                 logger.info(string)
 
     @filter.platform_adapter_type(PlatformAdapterType.AIOCQHTTP, priority=5)
@@ -38,14 +38,14 @@ class GroupLog(Star):
             question,answer,verify_type = ""
             if '\n' in comment:
                 verify_type = "验证消息"
-                comment = comment.split('\n')
-                if len(comment) >= 2:
-                    question = comment[0][3:]
-                    answer = comment[1][3:]
+                comment_parts = comment.split('\n')
+                if len(comment_parts) >= 2:
+                    question = comment_parts[0][3:]
+                    answer = comment_parts[1][3:]
                 else:
                     verify_type = "管理审核"
                     question = ""
-                    answer = comment
+                    answer = comment_parts
 
             if sub_type == "add":
                 # 加群
@@ -109,9 +109,14 @@ class GroupLog(Star):
                     name_new = raw.get("name_new")
                     await self.log("其他通知",f"用户 {user_id} 将群 {group_id} 的名称修改为 {name_new}")
                 elif sub_type == "poke":
+                    # 戳一戳
                     target_id = raw.get("target_id")
                     txt = raw.get("raw_info", [])
-                    await self.log("其他通知",f"用户 {user_id} {txt[2].get('txt')} {target_id}")
+                    if len(txt) >= 2:
+                        await self.log("其他通知",f"用户 {user_id} {txt[2].get('txt')} {target_id}")
+                    else:
+                        await self.log("其他通知",f"用户 {user_id} 戳了 {target_id}")
+                    
 
             # 撤回
             elif notice_type == "group_recall":
